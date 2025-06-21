@@ -1,15 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class RegisterService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final FirebaseDatabase _firebaseDatabase = FirebaseDatabase.instance;
+  // Explicitly use the database URL since it's missing in FirebaseOptions
+  final FirebaseDatabase _firebaseDatabase = FirebaseDatabase.instanceFor(
+    app: Firebase.app(),
+    databaseURL: 'https://gymer-8b429-default-rtdb.firebaseio.com/',
+  );
 
   // Register a new user with email and password
-  Future<void> registerUser(String name, String email, String password, String package, int remainingDays) async {
+  Future<void> registerUser(String name, String email, String password,
+      String package, int remainingDays) async {
     try {
       // Create a new user with the provided email and password
-      UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -17,12 +24,18 @@ class RegisterService {
       User? user = userCredential.user;
 
       if (user != null) {
-        await _firebaseDatabase.ref().child('users').child(user.uid).set({
-          'nama': name,
-          'email': email,
-        });
+        await _firebaseDatabase
+            .ref()
+            .child('users')
+            .child(user.uid)
+            .set({'nama': name, 'email': email, 'role': 'user'});
 
-        await _firebaseDatabase.ref().child('users').child(user.uid).child('membership').set({
+        await _firebaseDatabase
+            .ref()
+            .child('users')
+            .child(user.uid)
+            .child('membership')
+            .set({
           'package': package,
           'remainingDays': remainingDays,
         });

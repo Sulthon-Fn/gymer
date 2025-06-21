@@ -1,9 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:gymer/app/auth/loginconfirmation.dart';
 import 'package:gymer/service/database/database_service.dart';
-import 'package:gymer/widget/dateslider/dateslider.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:gymer/widget/loading/loadingwidget.dart';
+import 'package:gymer/app/auth/login_screen.dart';
+// --- 1. TAMBAHKAN IMPORT INI ---
+import 'package:gymer/app/faq/faq_screen.dart';
 
 class UserhomeScreen extends StatefulWidget {
   const UserhomeScreen({super.key});
@@ -13,235 +14,298 @@ class UserhomeScreen extends StatefulWidget {
 }
 
 class _UserhomeScreenState extends State<UserhomeScreen> {
-  DatabaseService service = DatabaseService();
-  FirebaseAuth auth = FirebaseAuth.instance;
-  String? userName;
-  DateTime selectedDate = DateTime.now();
+  final DatabaseService service = DatabaseService();
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    _getUserName();
+  Future<void> _logout() async {
+    // ... (fungsi logout Anda tidak berubah)
+    await auth.signOut();
+    if (mounted) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (Route<dynamic> route) => false,
+      );
+    }
   }
 
-  void _onDateChanged(DateTime date) {
-    setState(() {
-      selectedDate = date;
-    });
-  }
-
-  void _getUserName() async {
-    Map<String, String>? fetchedUserName = await service.getUserName();
-    setState(() {
-      if (fetchedUserName != null) {
-        userName = fetchedUserName['name'];
-      }
-    });
+  Future<void> _recordAttendance(String email, String name) async {
+    // ... (fungsi presensi Anda tidak berubah)
+    try {
+      LoadingDialog.show(context);
+      await service.recordAttendance(email, name);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Absen Berhasil')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    } finally {
+      LoadingDialog.hide(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    const Color primaryColor = Color(0xFF2C384A);
+    const Color backgroundColor = Color(0xFFE9E9E9);
+
     return Scaffold(
-      backgroundColor: Colors.blue,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            automaticallyImplyLeading: false,
-            backgroundColor: Colors.blue,
-            expandedHeight: 150.0,
-            floating: false,
-            pinned: true,
-            flexibleSpace: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                var top = constraints.biggest.height;
-                return FlexibleSpaceBar(
-                  titlePadding: EdgeInsets.only(
-                    left: top <= 56 ? 16 : 0,
-                    bottom: 16,
-                    right: top <= 56 ? 16 : 0,
-                  ),
-                  centerTitle: top > 56,
-                  title: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    child: Text(
-                      'Halo, $userName',
-                      style: const TextStyle(color: Colors.white),
+      backgroundColor: primaryColor,
+      body: SafeArea(
+        bottom: false,
+        // --- 2. BUNGKUS DENGAN STACK ---
+        child: Stack(
+          children: [
+            // Konten utama Anda (StreamBuilder) menjadi anak pertama dari Stack
+            StreamBuilder<Map<String, String>?>(
+              stream: service.getUserDetailsStream(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data == null) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final userDetails = snapshot.data!;
+                final email = userDetails['email'] ?? '-';
+                final name = userDetails['name'] ?? '-';
+
+                return Column(
+                  children: [
+                    const SizedBox(height: 100),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        decoration: const BoxDecoration(
+                          color: backgroundColor,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(30)),
+                        ),
+                        child: SingleChildScrollView(
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            alignment: Alignment.topCenter,
+                            children: [
+                              const SizedBox(height: 50),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.fromLTRB(24, 60, 24, 24),
+                                child: Column(
+                                  children: [
+                                    _buildUserInfoCard(userDetails, email, name),
+                                    const SizedBox(height: 24),
+                                    _buildHistorySection(email),
+                                  ],
+                                ),
+                              ),
+                              _buildProfilePicture(),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  background: Container(
-                    color: Colors.blue,
-                  ),
+                  ],
                 );
               },
             ),
+
+            // --- 3. TAMBAHKAN TOMBOL FAQ DI SINI ---
+            // Tombol ini akan berada di atas konten utama
+            Positioned(
+              top: 10,
+              right: 16,
+              child: IconButton(
+                icon: const Icon(Icons.help_outline,
+                    color: Colors.white, size: 28),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FaqScreen()),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Semua widget helper (_buildProfilePicture, _buildUserInfoCard, dll) TIDAK BERUBAH
+  Widget _buildProfilePicture() {
+    // ...
+    return Positioned(
+      top: -30,
+      child: CircleAvatar(
+        radius: 50,
+        backgroundColor: Colors.grey[300],
+        child: Icon(
+          Icons.person,
+          size: 60,
+          color: Colors.grey[500],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserInfoCard(
+      Map<String, String> userDetails, String email, String name) {
+    // ...
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          )
+        ],
+      ),
+      child: Column(
+        children: [
+          Text(
+            name,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF2C384A),
+            ),
           ),
-          SliverToBoxAdapter(
-            child: Column(
+          const SizedBox(height: 4),
+          Text(
+            "Tersisa ${userDetails['remainingDays'] ?? '-'} Hari",
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF2C384A),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+            ),
+            onPressed: () {
+              _recordAttendance(email, name);
+            },
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                DateSlider(onDateChanged: _onDateChanged),
-                Container(
-                  height: MediaQuery.of(context).size.height - 200,
-                  width: MediaQuery.of(context).size.width,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(30)),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 24, vertical: 12),
-                    child: Column(
-                      children: [
-                        StreamBuilder<Map<String, String>?>(
-                          stream: service.getUserDetailsStream(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return const Center(
-                                  child: Text('Error loading data'));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data == null) {
-                              return const Center(
-                                  child: Text('No data available'));
-                            } else {
-                              var userDetails = snapshot.data!;
-                              String qrData = "Nama: ${userDetails['name']}\n"
-                                  "Email: ${userDetails['email']}\n"
-                                  "Paket: ${userDetails['package']}\n"
-                                  "Hari Tersisa: ${userDetails['remainingDays']}";
-
-                              return Card(
-                                elevation: 2,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(24),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      const Text(
-                                        'Kartu Member',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 12,
-                                      ),
-                                      Row(
-                                        children: [
-                                          const CircleAvatar(
-                                            radius: 28,
-                                            backgroundColor: Colors.grey,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 12),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                    'Nama : ${userDetails['name']}'),
-                                                Text(
-                                                    'Email : ${userDetails['email']}'),
-                                                Text(
-                                                    'Paket : ${userDetails['package']}'),
-                                                Text(
-                                                    'Hari tersisa : ${userDetails['remainingDays']} Hari'),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        const Text(
-                          'Absen GYM',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const Text(
-                          'Scan QR code dilakukan oleh admin untuk absen GYM hari ini',
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        StreamBuilder<Map<String, String>?>(
-                          stream: service.getUserDetailsStream(),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            } else if (snapshot.hasError) {
-                              return const Center(
-                                  child: Text('Error loading QR data'));
-                            } else if (!snapshot.hasData ||
-                                snapshot.data == null) {
-                              return const Center(
-                                  child: Text('No QR data available'));
-                            } else {
-                              var userDetails = snapshot.data!;
-                              String qrData = "Nama: ${userDetails['name']}\n"
-                                  "Email: ${userDetails['email']}\n"
-                                  "Paket: ${userDetails['package']}\n"
-                                  "Hari Tersisa: ${userDetails['remainingDays']}";
-
-                              return QrImageView(
-                                data: qrData,
-                                version: QrVersions.auto,
-                                size: 200.0,
-                              );
-                            }
-                          },
-                        ),
-                        const SizedBox(
-                          height: 24,
-                        ),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  auth.signOut();
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const Login(),
-                                    ),
-                                  );
-                                },
-                                child: const Text('Log Out'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+                Icon(Icons.task, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Presensi',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
               ],
             ),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 255, 65, 65),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+            ),
+            onPressed: () {
+              _logout();
+            },
+            child: const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.logout, color: Colors.white),
+                SizedBox(width: 8),
+                Text('Logout',
+                    style: TextStyle(color: Colors.white, fontSize: 16)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHistorySection(String email) {
+    // ...
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Riwayat Kehadiran",
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF2C384A),
+          ),
+        ),
+        const SizedBox(height: 12),
+        StreamBuilder<List<Map<String, String>>>(
+          stream: service.getUserAbsenceList(email),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const CircularProgressIndicator();
+            }
+
+            if (snapshot.data!.isEmpty) {
+              return const Text("Belum ada riwayat absensi");
+            }
+
+            final absenceList = snapshot.data!;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: absenceList.length,
+              itemBuilder: (context, index) {
+                final item = absenceList[index];
+                return _buildHistoryItem(
+                    item['date'] ?? '-', item['remainingDays'] ?? '0');
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHistoryItem(String date, String remainingDays) {
+    // ...
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(Icons.fitness_center, color: Colors.grey[600]),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Terima kasih telah mengunjungi GYMGO!',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text('pada : $date',
+                    style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+              ],
+            ),
+          ),
+          Text(
+            'Sisa Hari : $remainingDays',
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
           ),
         ],
       ),

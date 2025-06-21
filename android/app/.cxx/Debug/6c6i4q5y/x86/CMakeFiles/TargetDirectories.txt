@@ -1,0 +1,2 @@
+D:/Andri/Project Gymer Lagi/gymer/android/app/.cxx/Debug/6c6i4q5y/x86/CMakeFiles/edit_cache.dir
+D:/Andri/Project Gymer Lagi/gymer/android/app/.cxx/Debug/6c6i4q5y/x86/CMakeFiles/rebuild_cache.dir

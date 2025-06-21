@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:gymer/app/auth/loginconfirmation.dart';
+import 'package:gymer/app/auth/login_screen.dart';
+import 'package:gymer/app/auth/register_page.dart';
+import 'package:gymer/app/splash/splash_screen.dart';
+import 'package:gymer/app/user/home/userhome_screen.dart';
 import 'package:gymer/firebase_options.dart';
 
 void main() async {
@@ -8,10 +11,10 @@ void main() async {
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-);
+  );
   runApp(const MyApp());
 }
-  
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -25,7 +28,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Login(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => SplashScreen(),
+        '/user': (context) => UserhomeScreen(),
+        '/login': (context) => LoginScreen(),
+        '/register': (context) => RegisterPage(),
+      },
     );
   }
 }

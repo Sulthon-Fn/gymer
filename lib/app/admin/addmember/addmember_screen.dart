@@ -12,18 +12,17 @@ class AddmemberScreen extends StatefulWidget {
 }
 
 class _AddmemberScreenState extends State<AddmemberScreen> {
-  RegisterService service = RegisterService();
-  AddmemberController controller = AddmemberController();
-  FirebaseAuth auth = FirebaseAuth.instance;
+  final RegisterService service = RegisterService();
+  final AddmemberController controller = AddmemberController();
+  final FirebaseAuth auth = FirebaseAuth.instance;
 
-  Future<List<String>> packageList() async {
-    return ['2 Minggu', '1 Bulan'];
-  }
-
-  int? remainingDays;
+  bool _obscureText = true;
   String? _selectedPackage;
+  final List<String> packageList = ['2 Minggu', '1 Bulan'];
 
   Future<void> _addMember() async {
+    int remainingDays = 0;
+
     if (_selectedPackage == '2 Minggu') {
       remainingDays = 14;
     } else if (_selectedPackage == '1 Bulan') {
@@ -33,18 +32,25 @@ class _AddmemberScreenState extends State<AddmemberScreen> {
     try {
       LoadingDialog.show(context);
 
-      String memberName = controller.nameController.text;
-      String memberEmail = controller.emailController.text;
-      String memberPassword = controller.passwordController.text;
+      final name = controller.nameController.text;
+      final email = controller.emailController.text;
+      final password = controller.passwordController.text;
 
-      await service.registerUser(memberName, memberEmail, memberPassword,
-          _selectedPackage!, remainingDays!);
+      await service.registerUser(
+        name,
+        email,
+        password,
+        _selectedPackage ?? '',
+        remainingDays,
+      );
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Berhasil menambahkan atas nama $memberName')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Berhasil menambahkan atas nama $name')),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString())),
+      );
     } finally {
       LoadingDialog.hide(context);
     }
@@ -52,86 +58,137 @@ class _AddmemberScreenState extends State<AddmemberScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Warna dari Figma
+    const Color primaryColor = Color(0xFF2C384A);
+    const Color hintColor = Colors.black38;
+
     return Scaffold(
+      backgroundColor: primaryColor,
       appBar: AppBar(
-        title: const Text('Tambah Member'),
+        backgroundColor: primaryColor,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: const Text(
+          'NEW MEMBER',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Column(
             children: [
-              TextFormField(
+              _buildTextField(
                 controller: controller.emailController,
-                decoration: const InputDecoration(
-                  hintText: 'Email',
-                  prefixIcon: Icon(Icons.email),
-                ),
+                hintText: 'Email',
+                icon: Icons.email_outlined,
               ),
-              const SizedBox(height: 12),
-              TextFormField(
+              const SizedBox(height: 16),
+              _buildTextField(
                 controller: controller.nameController,
-                decoration: const InputDecoration(
-                  hintText: 'Nama',
-                  prefixIcon: Icon(Icons.person),
-                ),
+                hintText: 'Name',
+                icon: Icons.person_outline,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: controller.passwordController,
-                decoration: const InputDecoration(
+                obscureText: _obscureText,
+                style: const TextStyle(color: primaryColor),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
                   hintText: 'Password',
-                  prefixIcon: Icon(Icons.lock),
+                  hintStyle: const TextStyle(color: hintColor),
+                  prefixIcon: const Icon(Icons.lock_outline, color: hintColor),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: hintColor,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-              FutureBuilder<List<String>>(
-                future: packageList(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const CircularProgressIndicator();
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    final packages = snapshot.data ?? [];
-                    return DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.card_giftcard),
-                        hintText: 'Pilih Paket',
-                      ),
-                      items: packages
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedPackage = newValue;
-                        });
-                      },
-                      value: _selectedPackage,
-                    );
-                  }
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: _selectedPackage,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  hintText: 'Choose Package',
+                  hintStyle: const TextStyle(color: hintColor),
+                  prefixIcon: const Icon(Icons.card_giftcard_outlined, color: hintColor),
+                ),
+                dropdownColor: Colors.white,
+                style: const TextStyle(color: primaryColor),
+                items: packageList.map((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedPackage = newValue;
+                  });
                 },
               ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        _addMember();
-                      },
-                      child: const Text('Tambah Member'),
+              const SizedBox(height: 32),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                ],
+                  onPressed: _addMember,
+                  child: const Text(
+                    'Create Member',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hintText,
+    required IconData icon,
+  }) {
+    return TextFormField(
+      controller: controller,
+      style: const TextStyle(color: Color(0xFF2C384A)),
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        hintText: hintText,
+        hintStyle: const TextStyle(color: Colors.black38),
+        prefixIcon: Icon(icon, color: Colors.black38),
       ),
     );
   }
