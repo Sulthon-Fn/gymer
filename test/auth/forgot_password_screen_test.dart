@@ -10,13 +10,13 @@ void main() {
     ));
 
     // Verify that the title is rendered.
-    expect(find.text('Reset Password'), findsOneWidget);
+    expect(find.text('Atur Ulang Kata Sandi'), findsOneWidget);
 
     // Verify that the email text field is rendered.
     expect(find.byType(TextField), findsOneWidget);
 
     // Verify that the send reset email button is rendered.
     expect(find.byType(ElevatedButton), findsOneWidget);
-    expect(find.text('Send Reset Email'), findsOneWidget);
+    expect(find.text('Kirim Email Pengaturan Ulang'), findsOneWidget);
   });
 }

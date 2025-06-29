@@ -47,7 +47,8 @@ class WaveClipper extends CustomClipper<Path> {
 }
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final FirebaseAuth? firebaseAuth;
+  const LoginScreen({super.key, this.firebaseAuth});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -55,9 +56,15 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final LoginController controller = LoginController();
-  final LoginService service = LoginService();
+  late final LoginService service;
   bool _obscureText = true;
   bool _isLoading = false; // State untuk loading
+
+  @override
+  void initState() {
+    super.initState();
+    service = LoginService(auth: widget.firebaseAuth);
+  }
 
   // Logika login tetap sama seperti sebelumnya
   void _handleLogin() async {
