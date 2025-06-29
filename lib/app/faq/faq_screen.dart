@@ -35,7 +35,7 @@ class FaqScreen extends StatelessWidget {
             children: [
               // --- Bagian Header ---
               const Text(
-                'Need help? We\'re here to help!',
+                'Butuh bantuan? Kami siap membantu!',
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
@@ -44,51 +44,51 @@ class FaqScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Find answers to your questions here or contact our support team for a quick solution.',
+                'Temukan jawaban atas pertanyaan Anda di sini atau hubungi tim dukungan kami untuk solusi cepat.',
                 style: TextStyle(fontSize: 15, color: Colors.grey[700]),
               ),
               const SizedBox(height: 32),
 
               // --- Bagian Cara Registrasi ---
               _buildFaqSection(
-                title: 'How to register and login?',
+                title: 'Bagaimana cara mendaftar dan masuk?',
                 points: [
-                  'Open the Gymer app and select "Register".',
-                  'Enter your name, email, and password.',
-                  'Verify your account via the email sent.',
-                  'If you already have an account, simply select "Login" and enter your email and password.',
+                  'Buka aplikasi Gymer dan pilih "Daftar".',
+                  'Masukkan nama, email, dan kata sandi Anda.',
+                  'Verifikasi akun Anda melalui email yang dikirim.',
+                  'Jika Anda sudah memiliki akun, cukup pilih "Masuk" dan masukkan email dan kata sandi Anda.',
                 ],
               ),
               const SizedBox(height: 24),
 
               // --- Bagian Lapor Masalah ---
               _buildFaqSection(
-                title: 'Report Issues',
-                description: 'Report technical issues or bugs in the app, we will fix them immediately!',
+                title: 'Laporkan Masalah',
+                description: 'Laporkan masalah teknis atau bug di aplikasi, kami akan segera memperbaikinya!',
                 points: [
-                  'Fill in the report form via the app in the "contact us" section.',
-                  'Explain the issues that occurred & attach screenshots if necessary.',
-                  'Our technical team will follow up on your report immediately.',
+                  'Isi formulir laporan melalui aplikasi di bagian "hubungi kami".',
+                  'Jelaskan masalah yang terjadi & lampirkan tangkapan layar jika perlu.',
+                  'Tim teknis kami akan segera menindaklanjuti laporan Anda.',
                 ],
               ),
               const SizedBox(height: 24),
 
               // --- Bagian Syarat & Ketentuan ---
               _buildFaqSection(
-                title: 'Terms & Conditions',
-                description: 'Learn the rules of use for the best experience!',
+                title: 'Syarat & Ketentuan',
+                description: 'Pelajari aturan penggunaan untuk pengalaman terbaik!',
                 points: [
-                  'The application is for registered users only.',
-                  'Sharing accounts with others is prohibited.',
-                  'Membership cannot be transferred to another user.',
-                  'Class cancellations must be made at least 24 hours before the session starts.',
+                  'Aplikasi ini hanya untuk pengguna terdaftar.',
+                  'Dilarang berbagi akun dengan orang lain.',
+                  'Keanggotaan tidak dapat dialihkan ke pengguna lain.',
+                  'Pembatalan kelas harus dilakukan setidaknya 24 jam sebelum sesi dimulai.',
                 ],
               ),
               const SizedBox(height: 24),
 
               // --- Bagian Kontak ---
               const Text(
-                'Contact Us',
+                'Hubungi Kami',
                 style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -96,7 +96,7 @@ class FaqScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(
-                'Still need help? Contact our support team:',
+                'Masih butuh bantuan? Hubungi tim dukungan kami:',
                 style: TextStyle(fontSize: 15, color: Colors.grey[700]),
               ),
               const SizedBox(height: 8),

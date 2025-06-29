@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymer/app/admin/main/adminhome_screen.dart';
+import 'package:gymer/app/auth/forgot_password_screen.dart';
 import 'package:gymer/app/auth/register_page.dart';
 import 'package:gymer/app/user/home/userhome_screen.dart';
 import 'package:gymer/service/login/login_service.dart';
@@ -8,15 +9,14 @@ import 'package:gymer/widget/loading/loadingwidget.dart';
 
 import 'package:flutter/widgets.dart';
 
-class LoginController{
+class LoginController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void dispose(){
+  void dispose() {
     emailController.dispose();
     passwordController.dispose();
   }
-
 }
 
 // Kelas untuk membuat bentuk lengkung pada header
@@ -57,6 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final LoginController controller = LoginController();
   final LoginService service = LoginService();
   bool _obscureText = true;
+  bool _isLoading = false; // State untuk loading
 
   // Logika login tetap sama seperti sebelumnya
   void _handleLogin() async {
@@ -92,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         } else {
           _showErrorSnackbar(
-              'Login Gagal. Periksa kembali email dan password Anda.');
+              'Login Gagal. Periksa kembali email dan kata sandi Anda.');
         }
       }
     } catch (e) {
@@ -135,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Login",
+                      "Masuk",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 36,
@@ -144,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "Welcome back!",
+                      "Selamat datang kembali!",
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 18,
@@ -183,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: controller.passwordController,
                     obscureText: _obscureText,
                     decoration: InputDecoration(
-                      hintText: 'Password',
+                      hintText: 'Kata Sandi',
                       prefixIcon:
                           const Icon(Icons.lock_outline, color: primaryColor),
                       suffixIcon: IconButton(
@@ -207,7 +208,23 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                const ForgotPasswordScreen()));
+                      },
+                      child: const Text(
+                        'Lupa Kata Sandi?',
+                        style: TextStyle(
+                          color: primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                   // Tombol Login
                   SizedBox(
                     width: double.infinity,
@@ -218,11 +235,22 @@ class _LoginScreenState extends State<LoginScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           )),
-                      onPressed: _handleLogin,
-                      child: const Text(
-                        'Login',
-                        style: TextStyle(fontSize: 18, color: Colors.white),
-                      ),
+                      onPressed:
+                          _isLoading ? null : _handleLogin, // Disable button when loading
+                      child: _isLoading
+                          ? const SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 3,
+                              ),
+                            )
+                          : const Text(
+                              'Masuk',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.white),
+                            ),
                     ),
                   ),
                   const SizedBox(height: 48),
@@ -234,7 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        "You don't have an account yet? ",
+                        "Anda belum punya akun? ",
                         style: TextStyle(color: Colors.grey),
                       ),
                       GestureDetector(
@@ -246,7 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           );
                         },
                         child: const Text(
-                          "Register",
+                          "Daftar",
                           style: TextStyle(
                             color: primaryColor,
                             fontWeight: FontWeight.bold,

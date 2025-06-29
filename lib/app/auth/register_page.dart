@@ -98,7 +98,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Register",
+                      "Daftar",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 36,
@@ -107,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     SizedBox(height: 8),
                     Text(
-                      "Buat akun barumu di Gym App",
+                      "Buat akun barumu di Aplikasi Gym",
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 18,
@@ -156,7 +156,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     controller: controller.passwordController,
                     obscureText: true,
                     decoration: InputDecoration(
-                      hintText: 'Password',
+                      hintText: 'Kata Sandi',
                       prefixIcon: const Icon(Icons.lock, color: primaryColor),
                       filled: true,
                       fillColor: Colors.white,
@@ -197,11 +197,11 @@ class _RegisterPageState extends State<RegisterPage> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => LoginScreen()),
+                                builder: (context) => const LoginScreen()),
                           );
                         },
                         child: const Text(
-                          "Login",
+                          "Masuk",
                           style: TextStyle(
                             color: primaryColor,
                             fontWeight: FontWeight.bold,
