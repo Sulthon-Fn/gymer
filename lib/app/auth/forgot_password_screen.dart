@@ -1,8 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart'; // Import untuk autentikasi Firebase
+import 'package:flutter/material.dart'; // Import widget Flutter
+import 'package:gymer/widget/loading/loadingwidget.dart'; // Import widget loading
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:gymer/widget/loading/loadingwidget.dart';
-
+// Halaman untuk reset password
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
 
@@ -11,9 +11,10 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final emailController = TextEditingController();
-  bool _isLoading = false;
+  final emailController = TextEditingController(); // Controller input email
+  bool _isLoading = false; // State loading
 
+  // Fungsi untuk mengirim email reset password
   void _sendResetEmail() async {
     final email = emailController.text.trim();
     if (email.isEmpty) {
@@ -24,14 +25,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     setState(() {
       _isLoading = true;
     });
-    LoadingDialog.show(context);
+    LoadingDialog.show(context); // Tampilkan loading
 
     try {
+      // Kirim email reset password melalui Firebase
       await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
       if (mounted) {
         LoadingDialog.hide(context);
         _showSuccessSnackbar('Email pengaturan ulang kata sandi telah dikirim ke $email');
-        Navigator.of(context).pop();
+        Navigator.of(context).pop(); // Kembali ke halaman sebelumnya
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
@@ -47,12 +49,14 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     }
   }
 
+  // Fungsi untuk menampilkan pesan error
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
     );
   }
 
+  // Fungsi untuk menampilkan pesan sukses
   void _showSuccessSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.green),
@@ -61,12 +65,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   @override
   void dispose() {
-    emailController.dispose();
+    emailController.dispose(); // Dispose controller
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Definisikan warna dari Figma
     const Color primaryColor = Color(0xFF2C384A);
     const Color backgroundColor = Color(0xFFF5F5F5);
 
@@ -75,12 +80,15 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       appBar: AppBar(
         title: const Text('Atur Ulang Kata Sandi'),
         backgroundColor: primaryColor,
+        foregroundColor: Colors.white, // Judul dan icon jadi putih
+        iconTheme: const IconThemeData(color: Colors.white), // Icon back putih
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Input email
             TextField(
               controller: emailController,
               decoration: InputDecoration(
@@ -96,6 +104,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 24),
+            // Tombol kirim email reset
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

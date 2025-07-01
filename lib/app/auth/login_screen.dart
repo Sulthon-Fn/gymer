@@ -1,14 +1,15 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:gymer/app/admin/main/adminhome_screen.dart';
-import 'package:gymer/app/auth/forgot_password_screen.dart';
-import 'package:gymer/app/auth/register_page.dart';
-import 'package:gymer/app/user/home/userhome_screen.dart';
-import 'package:gymer/service/login/login_service.dart';
-import 'package:gymer/widget/loading/loadingwidget.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import untuk autentikasi Firebase
+import 'package:flutter/material.dart'; // Import widget Flutter
+import 'package:gymer/app/admin/main/adminhome_screen.dart'; // Import halaman admin
+import 'package:gymer/app/auth/forgot_password_screen.dart'; // Import halaman lupa password
+import 'package:gymer/app/auth/register_page.dart'; // Import halaman register
+import 'package:gymer/app/user/home/userhome_screen.dart'; // Import halaman utama user
+import 'package:gymer/service/login/login_service.dart'; // Import service login
+import 'package:gymer/widget/loading/loadingwidget.dart'; // Import widget loading
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/widgets.dart'; // Import widget dasar Flutter
 
+// Controller untuk mengelola input email dan password
 class LoginController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -46,6 +47,7 @@ class WaveClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
+// Halaman Login
 class LoginScreen extends StatefulWidget {
   final FirebaseAuth? firebaseAuth;
   const LoginScreen({super.key, this.firebaseAuth});
@@ -55,18 +57,19 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final LoginController controller = LoginController();
-  late final LoginService service;
-  bool _obscureText = true;
+  final LoginController controller = LoginController(); // Controller input
+  late final LoginService service; // Service untuk login
+  bool _obscureText = true; // State untuk show/hide password
   bool _isLoading = false; // State untuk loading
 
   @override
   void initState() {
     super.initState();
+    // Inisialisasi service login dengan FirebaseAuth
     service = LoginService(auth: widget.firebaseAuth);
   }
 
-  // Logika login tetap sama seperti sebelumnya
+  // Fungsi untuk menangani proses login
   void _handleLogin() async {
     String email = controller.emailController.text.trim();
     String password = controller.passwordController.text.trim();
@@ -74,14 +77,16 @@ class _LoginScreenState extends State<LoginScreen> {
     const String adminEmail = 'admin@gmail.com';
     const String adminPassword = 'passwordadmin';
 
-    LoadingDialog.show(context);
+    LoadingDialog.show(context); // Tampilkan loading
 
     try {
+      // Jika login sebagai admin
       if (email == adminEmail && password == adminPassword) {
         User? admin = await service.adminLogin(email, password);
         if (mounted) LoadingDialog.hide(context);
 
         if (admin != null) {
+          // Jika berhasil, arahkan ke halaman admin
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const AdminhomeScreen()),
@@ -90,10 +95,12 @@ class _LoginScreenState extends State<LoginScreen> {
           _showErrorSnackbar('Login Admin Gagal.');
         }
       } else {
+        // Jika login sebagai user biasa
         User? user = await service.userLogin(email, password);
         if (mounted) LoadingDialog.hide(context);
 
         if (user != null) {
+          // Jika berhasil, arahkan ke halaman user
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const UserhomeScreen()),
@@ -105,10 +112,11 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) LoadingDialog.hide(context);
-      _showErrorSnackbar('Terjadi kesalahan: ${e.toString()}');
+      _showErrorSnackbar('Terjadi kesalahan: e.toString()}');
     }
   }
 
+  // Fungsi untuk menampilkan pesan error
   void _showErrorSnackbar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message), backgroundColor: Colors.red),
@@ -117,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    controller.dispose();
+    controller.dispose(); // Dispose controller
     super.dispose();
   }
 
@@ -143,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Masuk",
+                      "Hallo!",
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 36,

@@ -1,7 +1,8 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:gymer/app/auth/login_screen.dart';
+import 'dart:async'; // Import untuk Timer
+import 'package:flutter/material.dart'; // Import widget Flutter
+import 'package:gymer/app/auth/login_screen.dart'; // Import halaman login
 
+// Widget SplashScreen sebagai halaman pembuka aplikasi
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -38,6 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
               width: 200, // Sesuaikan ukurannya jika perlu
             ),
             const SizedBox(height: 24),
+            // Menampilkan loading indicator
             const CircularProgressIndicator(
               // Beri warna pada loading indicator
               valueColor: AlwaysStoppedAnimation<Color>(Colors.blueAccent),

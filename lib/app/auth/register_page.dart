@@ -1,10 +1,11 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:gymer/app/admin/addmember/addmember_controller.dart';
-import 'package:gymer/app/auth/login_screen.dart';
-import 'package:gymer/service/register/register_service.dart';
-import 'package:gymer/widget/loading/loadingwidget.dart';
+import 'package:firebase_auth/firebase_auth.dart'; // Import untuk autentikasi Firebase
+import 'package:flutter/material.dart'; // Import widget Flutter
+import 'package:gymer/app/admin/addmember/addmember_controller.dart'; // Import controller member
+import 'package:gymer/app/auth/login_screen.dart'; // Import halaman login
+import 'package:gymer/service/register/register_service.dart'; // Import service register
+import 'package:gymer/widget/loading/loadingwidget.dart'; // Import widget loading
 
+// Kelas untuk membuat header melengkung di atas
 class WaveClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
@@ -31,6 +32,7 @@ class WaveClipper extends CustomClipper<Path> {
   bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
 
+// Halaman Register
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -39,14 +41,16 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  RegisterService service = RegisterService();
-  AddmemberController controller = AddmemberController();
-  FirebaseAuth auth = FirebaseAuth.instance;
+  RegisterService service = RegisterService(); // Service untuk register
+  AddmemberController controller = AddmemberController(); // Controller input
+  FirebaseAuth auth = FirebaseAuth.instance; // Instance Firebase Auth
 
-  int? remainingDays = 0;
-  String? _selectedPackage = 'Tidak ada paket';
+  int? remainingDays = 0; // Sisa hari membership
+  String? _selectedPackage = 'Tidak ada paket'; // Paket yang dipilih
 
+  // Fungsi untuk proses registrasi user
   Future<void> _registerUser() async {
+    // Atur sisa hari berdasarkan paket
     if (_selectedPackage == '2 Minggu') {
       remainingDays = 14;
     } else if (_selectedPackage == '1 Bulan') {
@@ -54,31 +58,35 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     try {
-      LoadingDialog.show(context);
+      LoadingDialog.show(context); // Tampilkan loading
 
       String memberName = controller.nameController.text;
       String memberEmail = controller.emailController.text;
       String memberPassword = controller.passwordController.text;
 
+      // Panggil service untuk register user baru
       await service.registerUser(memberName, memberEmail, memberPassword,
           _selectedPackage!, remainingDays!);
 
       if (mounted) {
+        // Jika berhasil, tampilkan pesan dan arahkan ke login
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registrasi berhasil!')),
         );
         Navigator.pushReplacementNamed(context, '/login');
       }
     } catch (e) {
+      // Jika gagal, tampilkan pesan error
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
-      LoadingDialog.hide(context);
+      LoadingDialog.hide(context); // Sembunyikan loading
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Definisikan warna dari Figma
     const Color primaryColor = Color(0xFF2C384A);
     const Color backgroundColor = Color(0xFFF5F5F5);
 
@@ -124,6 +132,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const EdgeInsets.symmetric(horizontal: 24.0, vertical: 32.0),
               child: Column(
                 children: [
+                  // Input Email
                   TextFormField(
                     controller: controller.emailController,
                     decoration: InputDecoration(
@@ -138,6 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Input Nama Lengkap
                   TextFormField(
                     controller: controller.nameController,
                     decoration: InputDecoration(
@@ -152,6 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
+                  // Input Password
                   TextFormField(
                     controller: controller.passwordController,
                     obscureText: true,
@@ -167,6 +178,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 24),
+                  // Tombol Daftar
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -185,8 +197,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ),
                   const SizedBox(height: 48),
+                  // Logo aplikasi
                   Image.asset('assets/images/logo_gymer.png', height: 40),
                   const SizedBox(height: 16),
+                  // Link ke halaman login
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [

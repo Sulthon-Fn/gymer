@@ -5,7 +5,7 @@ class FaqScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Definisikan palet warna sesuai Figma
+    // Definisikan warna sesuai Figma
     const Color primaryColor = Color(0xFF2C384A);
     const Color backgroundColor = Color(0xFFF5F5F5);
 
@@ -100,8 +100,8 @@ class FaqScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 15, color: Colors.grey[700]),
               ),
               const SizedBox(height: 8),
-              _buildContactInfo(Icons.email_outlined, 'gymgo@gmail.com'),
-              _buildContactInfo(Icons.phone_outlined, '+62 812-3456-7890'),
+              _buildContactInfo(Icons.email_outlined, 'gymgofirebase@gmail.com'),
+              _buildContactInfo(Icons.phone_outlined, '+62 813-9230-3981'),
             ],
           ),
         ),
