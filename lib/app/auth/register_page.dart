@@ -63,10 +63,11 @@ class _RegisterPageState extends State<RegisterPage> {
       String memberName = controller.nameController.text;
       String memberEmail = controller.emailController.text;
       String memberPassword = controller.passwordController.text;
+      String memberPhone = controller.phoneController.text; // Ambil nomor telepon
 
-      // Panggil service untuk register user baru
+      // Panggil service untuk register user baru dengan nomor telepon
       await service.registerUser(memberName, memberEmail, memberPassword,
-          _selectedPackage!, remainingDays!);
+          _selectedPackage!, remainingDays!, memberPhone);
 
       if (mounted) {
         // Jika berhasil, tampilkan pesan dan arahkan ke login
@@ -153,6 +154,22 @@ class _RegisterPageState extends State<RegisterPage> {
                     decoration: InputDecoration(
                       hintText: 'Nama Lengkap',
                       prefixIcon: const Icon(Icons.person, color: primaryColor),
+                      filled: true,
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Input Nomor Telepon
+                  TextFormField(
+                    controller: controller.phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      hintText: 'Nomor Telepon',
+                      prefixIcon: const Icon(Icons.phone, color: primaryColor),
                       filled: true,
                       fillColor: Colors.white,
                       border: OutlineInputBorder(

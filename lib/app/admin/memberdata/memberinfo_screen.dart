@@ -15,6 +15,7 @@ class _MemberInfoScreenState extends State<MemberInfoScreen> {
 
   late TextEditingController _nameController;
   late TextEditingController _emailController;
+  late TextEditingController _phoneController; // Controller untuk nomor telepon
   late TextEditingController _remainingDaysController;
   String? _selectedPackage;
 
@@ -28,6 +29,7 @@ class _MemberInfoScreenState extends State<MemberInfoScreen> {
     super.initState();
     _nameController = TextEditingController(text: widget.member['nama'] ?? '');
     _emailController = TextEditingController(text: widget.member['email'] ?? '');
+    _phoneController = TextEditingController(text: widget.member['phone'] ?? ''); // Inisialisasi phone controller
 
     final membership = widget.member['membership'] as Map<String, dynamic>;
     _remainingDaysController = TextEditingController(
@@ -43,6 +45,7 @@ class _MemberInfoScreenState extends State<MemberInfoScreen> {
       final updatedData = {
         'nama': _nameController.text,
         'email': _emailController.text,
+        'phone': _phoneController.text, // Tambahkan nomor telepon
         'membership': {
           'package': _selectedPackage ?? '',
           'remainingDays': int.tryParse(_remainingDaysController.text) ?? 0,
@@ -89,6 +92,13 @@ class _MemberInfoScreenState extends State<MemberInfoScreen> {
               controller: _nameController,
               hintText: 'Nama',
               icon: Icons.person_outline,
+            ),
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _phoneController,
+              hintText: 'Nomor Telepon',
+              icon: Icons.phone_outlined,
+              keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(

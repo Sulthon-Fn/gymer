@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter/foundation.dart'; // Import untuk debugPrint
 
 class DatabaseService {
   // ✅ Gunakan URL dari project kamu
@@ -244,12 +245,18 @@ class DatabaseService {
             'remainingDays': remainingDays,
           };
         } else {
-          print('⚠️ No data available for UID: ${user.uid}');
-          return null;
+          debugPrint('⚠️ No data available for UID: ${user.uid}');
+          // Return data default daripada null untuk mencegah error
+          return {
+            'name': 'User tidak ditemukan',
+            'email': user.email ?? 'No Email',
+            'package': 'Tidak ada paket',
+            'remainingDays': '0',
+          };
         }
       });
     } else {
-      print('❌ User not logged in');
+      debugPrint('❌ User not logged in');
       return Stream.value(null);
     }
   }

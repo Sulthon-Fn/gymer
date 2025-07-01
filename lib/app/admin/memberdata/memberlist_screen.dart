@@ -95,6 +95,7 @@ class _MemberListScreenState extends State<MemberListScreen> {
                   final uid = member['uid'];
                   final name = member['nama'] ?? 'Tanpa Nama';
                   final email = member['email'] ?? 'No Email';
+                  final phone = member['phone'] ?? 'No Phone'; // Ambil nomor telepon
                   final paket = membership['package'] ?? 'N/A';
                   final remainingDays = membership['remainingDays'] ?? 0;
 
@@ -144,6 +145,8 @@ class _MemberListScreenState extends State<MemberListScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text('Email: $email',
+                                    style: const TextStyle(fontSize: 13)),
+                                Text('Phone: $phone',
                                     style: const TextStyle(fontSize: 13)),
                                 Text('Paket: $paket',
                                     style: const TextStyle(fontSize: 13)),

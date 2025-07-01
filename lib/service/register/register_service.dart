@@ -12,7 +12,7 @@ class RegisterService {
 
   // Register a new user with email and password
   Future<void> registerUser(String name, String email, String password,
-      String package, int remainingDays) async {
+      String package, int remainingDays, String phone) async {
     try {
       // Create a new user with the provided email and password
       UserCredential userCredential =
@@ -28,7 +28,12 @@ class RegisterService {
             .ref()
             .child('users')
             .child(user.uid)
-            .set({'nama': name, 'email': email, 'role': 'user'});
+            .set({
+              'nama': name, 
+              'email': email, 
+              'phone': phone, // Tambahkan nomor telepon
+              'role': 'user'
+            });
 
         await _firebaseDatabase
             .ref()

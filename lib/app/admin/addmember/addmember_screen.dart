@@ -35,6 +35,7 @@ class _AddmemberScreenState extends State<AddmemberScreen> {
       final name = controller.nameController.text;
       final email = controller.emailController.text;
       final password = controller.passwordController.text;
+      final phone = controller.phoneController.text;
 
       await service.registerUser(
         name,
@@ -42,6 +43,7 @@ class _AddmemberScreenState extends State<AddmemberScreen> {
         password,
         _selectedPackage ?? '',
         remainingDays,
+        phone, // Tambahkan parameter phone
       );
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -88,6 +90,12 @@ class _AddmemberScreenState extends State<AddmemberScreen> {
                 controller: controller.nameController,
                 hintText: 'Name',
                 icon: Icons.person_outline,
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: controller.phoneController,
+                hintText: 'Phone Number',
+                icon: Icons.phone_outlined,
               ),
               const SizedBox(height: 16),
               TextFormField(
