@@ -88,6 +88,36 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Logo aplikasi dengan sudut membulat
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: Image.asset(
+                'assets/images/logo_gymer.png',
+                height: 120,
+                width: 120,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(height: 32),
+            // Judul dan deskripsi
+            const Text(
+              'Lupa Kata Sandi?',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: primaryColor,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Masukkan email Anda untuk menerima\nlink reset kata sandi',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 32),
             // Input email
             TextField(
               controller: emailController,
@@ -103,7 +133,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               ),
               keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             // Tombol kirim email reset
             SizedBox(
               width: double.infinity,
@@ -119,9 +149,24 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text(
-                        'Kirim Email Pengaturan Ulang',
+                        'Kirim Email',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            // Link kembali ke login
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                'Kembali ke Login',
+                style: TextStyle(
+                  color: primaryColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
           ],
