@@ -1,5 +1,5 @@
 name: gymer
-description: "A new Flutter project."
+description: "Gymer - Aplikasi Manajemen Gym"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -51,7 +51,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
-  flutter_launcher_icons: ^0.14.4
+  flutter_launcher_icons: ^0.14.1
   change_app_package_name: ^1.5.0
 
 # For information on the generic Dart part of this file, see the
@@ -69,11 +69,21 @@ flutter:
   assets:
     - assets/images/
 
-flutter_icons:
+flutter_launcher_icons:
   android: true
   ios: true
-  image_path: assets/images/logo_gymer.png
+  image_path: "assets/images/logo_gymer.png"
   remove_alpha_ios: true
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  web:
+    generate: true
+    image_path: "assets/images/logo_gymer.png"
+  windows:
+    generate: true
+    image_path: "assets/images/logo_gymer.png"
+  macos:
+    generate: true
+    image_path: "assets/images/logo_gymer.png"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

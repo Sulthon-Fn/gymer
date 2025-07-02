@@ -2,7 +2,7 @@ import 'dart:async'; // Import untuk Timer
 import 'package:flutter/material.dart'; // Import widget Flutter
 import 'package:gymer/app/auth/login_screen.dart'; // Import halaman login
 import 'package:firebase_auth/firebase_auth.dart'; // Import Firebase Auth
-import 'package:gymer/app/user/home/userhome_screen.dart'; // Import halaman home user
+import 'package:gymer/app/user/main_navigation.dart'; // Import halaman main navigation
 
 // Widget SplashScreen sebagai halaman pembuka aplikasi
 class SplashScreen extends StatefulWidget {
@@ -22,9 +22,9 @@ class _SplashScreenState extends State<SplashScreen> {
       // Cek status login user
       final user = FirebaseAuth.instance.currentUser;
       if (user != null) {
-        // Jika sudah login, langsung ke home
+        // Jika sudah login, langsung ke main navigation
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const UserhomeScreen()),
+          MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
         );
       } else {
         // Jika belum login, ke login screen

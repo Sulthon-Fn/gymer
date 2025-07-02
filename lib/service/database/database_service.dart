@@ -232,6 +232,7 @@ class DatabaseService {
         if (snapshot.exists) {
           String name = snapshot.child('nama').value?.toString() ?? '-';
           String email = snapshot.child('email').value?.toString() ?? '-';
+          String phone = snapshot.child('phone').value?.toString() ?? '-';
           String package =
               snapshot.child('membership/package').value?.toString() ?? '-';
           String remainingDays =
@@ -241,6 +242,7 @@ class DatabaseService {
           return {
             'name': name,
             'email': email,
+            'phone': phone,
             'package': package,
             'remainingDays': remainingDays,
           };
@@ -250,6 +252,7 @@ class DatabaseService {
           return {
             'name': 'User tidak ditemukan',
             'email': user.email ?? 'No Email',
+            'phone': 'Tidak tersedia',
             'package': 'Tidak ada paket',
             'remainingDays': '0',
           };
@@ -258,6 +261,43 @@ class DatabaseService {
     } else {
       debugPrint('❌ User not logged in');
       return Stream.value(null);
+    }
+  }
+
+  // Method untuk update nomor telepon user
+  Future<void> updateUserPhone(String newPhone) async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        await database.ref().child('users/${user.uid}').update({
+          'phone': newPhone,
+        });
+        debugPrint('✅ Nomor telepon berhasil diupdate untuk UID: ${user.uid}');
+      } catch (e) {
+        debugPrint('❌ Error updating phone: $e');
+        rethrow;
+      }
+    } else {
+      throw Exception('User tidak ditemukan');
+    }
+  }
+
+  // Method untuk update profile user (nama dan nomor telepon)
+  Future<void> updateUserProfile(String newName, String newPhone) async {
+    User? user = auth.currentUser;
+    if (user != null) {
+      try {
+        await database.ref().child('users/${user.uid}').update({
+          'nama': newName,
+          'phone': newPhone,
+        });
+        debugPrint('✅ Profile berhasil diupdate untuk UID: ${user.uid}');
+      } catch (e) {
+        debugPrint('❌ Error updating profile: $e');
+        rethrow;
+      }
+    } else {
+      throw Exception('User tidak ditemukan');
     }
   }
 }

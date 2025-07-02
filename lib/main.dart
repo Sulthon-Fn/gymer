@@ -9,7 +9,7 @@ import 'package:gymer/app/auth/register_page.dart';
 // Import halaman splash screen
 import 'package:gymer/app/splash/splash_screen.dart';
 // Import halaman utama user
-import 'package:gymer/app/user/home/userhome_screen.dart';
+import 'package:gymer/app/user/main_navigation.dart';
 // Import konfigurasi Firebase
 import 'package:gymer/firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -54,10 +54,10 @@ class MyApp extends StatelessWidget {
           }
           // Jika user sudah login, arahkan ke halaman utama user
           if (snapshot.hasData) {
-            return UserhomeScreen(); // Pengguna sudah login, arahkan ke home screen
+            return const MainNavigationScreen(); // Pengguna sudah login, arahkan ke home screen
           }
           // Jika user belum login, arahkan ke halaman login
-          return LoginScreen(); // Pengguna belum login, arahkan ke login screen
+          return const LoginScreen(); // Pengguna belum login, arahkan ke login screen
         },
       ),
     );

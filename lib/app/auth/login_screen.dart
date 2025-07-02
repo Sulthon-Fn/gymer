@@ -3,7 +3,7 @@ import 'package:flutter/material.dart'; // Import widget Flutter
 import 'package:gymer/app/admin/main/adminhome_screen.dart'; // Import halaman admin
 import 'package:gymer/app/auth/forgot_password_screen.dart'; // Import halaman lupa password
 import 'package:gymer/app/auth/register_page.dart'; // Import halaman register
-import 'package:gymer/app/user/home/userhome_screen.dart'; // Import halaman utama user
+import 'package:gymer/app/user/main_navigation.dart'; // Import halaman main navigation
 import 'package:gymer/service/login/login_service.dart'; // Import service login
 import 'package:gymer/widget/loading/loadingwidget.dart'; // Import widget loading
 
@@ -103,7 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
           // Jika berhasil, arahkan ke halaman user
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const UserhomeScreen()),
+            MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
           );
         } else {
           _showErrorSnackbar(

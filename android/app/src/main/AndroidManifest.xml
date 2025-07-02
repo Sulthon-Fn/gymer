@@ -2,7 +2,7 @@
     package="com.app.gymer">
     
     <application
-        android:label="gymer"
+        android:label="Gymer"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

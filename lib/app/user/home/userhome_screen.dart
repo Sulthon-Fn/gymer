@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:gymer/service/database/database_service.dart';
 import 'package:gymer/widget/loading/loadingwidget.dart';
 import 'package:gymer/app/auth/login_screen.dart';
-// --- 1. TAMBAHKAN IMPORT INI ---
-import 'package:gymer/app/faq/faq_screen.dart';
 
 class UserhomeScreen extends StatefulWidget {
   const UserhomeScreen({super.key});
@@ -55,72 +53,68 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
       backgroundColor: primaryColor,
       body: SafeArea(
         bottom: false,
-        // --- 2. BUNGKUS DENGAN STACK ---
-        child: Stack(
+        child: Column(
           children: [
-            // Konten utama Anda (StreamBuilder) menjadi anak pertama dari Stack
-            StreamBuilder<Map<String, String>?>(
-              stream: service.getUserDetailsStream(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData || snapshot.data == null) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+            // Konten utama Anda (StreamBuilder)
+            Expanded(
+              child: StreamBuilder<Map<String, String>?>(
+                stream: service.getUserDetailsStream(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                final userDetails = snapshot.data!;
-                final email = userDetails['email'] ?? '-';
-                final name = userDetails['name'] ?? '-';
+                  final userDetails = snapshot.data!;
+                  final email = userDetails['email'] ?? '-';
+                  final name = userDetails['name'] ?? '-';
 
-                return Column(
-                  children: [
-                    const SizedBox(height: 100),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: backgroundColor,
-                          borderRadius:
-                              BorderRadius.vertical(top: Radius.circular(30)),
-                        ),
-                        child: SingleChildScrollView(
-                          child: Stack(
-                            clipBehavior: Clip.none,
-                            alignment: Alignment.topCenter,
-                            children: [
-                              const SizedBox(height: 50),
-                              Padding(
-                                padding:
-                                    const EdgeInsets.fromLTRB(24, 60, 24, 24),
-                                child: Column(
-                                  children: [
-                                    _buildUserInfoCard(userDetails, email, name),
-                                    const SizedBox(height: 24),
-                                    _buildHistorySection(email),
-                                  ],
-                                ),
-                              ),
-                              _buildProfilePicture(),
-                            ],
+                  return Column(
+                    children: [
+                      // Header tanpa logo
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                        child: const Text(
+                          'Selamat Datang di Gymer',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
                           ),
                         ),
                       ),
-                    ),
-                  ],
-                );
-              },
-            ),
-
-            // --- 3. TAMBAHKAN TOMBOL FAQ DI SINI ---
-            // Tombol ini akan berada di atas konten utama
-            Positioned(
-              top: 10,
-              right: 16,
-              child: IconButton(
-                icon: const Icon(Icons.help_outline,
-                    color: Colors.white, size: 28),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const FaqScreen()),
+                      const SizedBox(height: 20),
+                      Expanded(
+                        child: Container(
+                          width: double.infinity,
+                          decoration: const BoxDecoration(
+                            color: backgroundColor,
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(30)),
+                          ),
+                          child: SingleChildScrollView(
+                            child: Stack(
+                              clipBehavior: Clip.none,
+                              alignment: Alignment.topCenter,
+                              children: [
+                                const SizedBox(height: 50),
+                                Padding(
+                                  padding:
+                                      const EdgeInsets.fromLTRB(24, 60, 24, 24),
+                                  child: Column(
+                                    children: [
+                                      _buildUserInfoCard(userDetails, email, name),
+                                      const SizedBox(height: 24),
+                                      _buildHistorySection(email),
+                                    ],
+                                  ),
+                                ),
+                                _buildProfilePicture(),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   );
                 },
               ),
