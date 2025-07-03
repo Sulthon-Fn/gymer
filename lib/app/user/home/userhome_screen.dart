@@ -403,7 +403,7 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
           const SizedBox(height: 16),
           // Deskripsi
           const Text(
-            'Dapatkan akses unlimited ke semua fasilitas gym dan nikmati pengalaman fitness terbaik!',
+            'Dapatkan akses ke semua fasilitas gym dan nikmati pengalaman ngegym terbaik!',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -412,7 +412,7 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // Tombol WhatsApp
+          // Tombol direct ke wa
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
@@ -431,7 +431,7 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
                 ),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF25D366), // WhatsApp green
+                backgroundColor: const Color(0xFF25D366), 
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(15),
