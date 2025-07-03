@@ -16,8 +16,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // List screen yang akan ditampilkan
   final List<Widget> _screens = [
     const UserhomeScreen(),
-    const ProfileScreen(), 
     const EquipmentScreen(),
+    const ProfileScreen(), 
   ];
 
   @override
@@ -62,10 +62,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 0 ? primaryColor.withOpacity(0.1) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
                 child: Image.asset(
                   'assets/images/absen.png',
                   width: 28,
@@ -78,34 +74,26 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 1 ? primaryColor.withOpacity(0.1) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
                 child: Image.asset(
-                  'assets/images/profil.png',
+                  'assets/images/fasilitas.png',
                   width: 28,
                   height: 28,
                   color: _currentIndex == 1 ? primaryColor : Colors.grey[500],
                 ),
               ),
-              label: 'Profile',
+              label: 'Equipment',
             ),
             BottomNavigationBarItem(
               icon: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: _currentIndex == 2 ? primaryColor.withOpacity(0.1) : Colors.transparent,
-                  borderRadius: BorderRadius.circular(12),
-                ),
                 child: Image.asset(
-                  'assets/images/fasilitas.png',
+                  'assets/images/profil.png',
                   width: 28,
                   height: 28,
                   color: _currentIndex == 2 ? primaryColor : Colors.grey[500],
                 ),
               ),
-              label: 'Equipment',
+              label: 'Profile',
             ),
           ],
         ),

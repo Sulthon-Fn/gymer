@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gymer/service/database/database_service.dart';
 import 'package:gymer/widget/loading/loadingwidget.dart';
-import 'package:gymer/app/auth/login_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class UserhomeScreen extends StatefulWidget {
   const UserhomeScreen({super.key});
@@ -14,18 +14,6 @@ class UserhomeScreen extends StatefulWidget {
 class _UserhomeScreenState extends State<UserhomeScreen> {
   final DatabaseService service = DatabaseService();
   final FirebaseAuth auth = FirebaseAuth.instance;
-
-  Future<void> _logout() async {
-    // ... (fungsi logout Anda tidak berubah)
-    await auth.signOut();
-    if (mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-        (Route<dynamic> route) => false,
-      );
-    }
-  }
 
   Future<void> _recordAttendance(String email, String name) async {
     // ... (fungsi presensi Anda tidak berubah)
@@ -42,6 +30,43 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
     } finally {
       LoadingDialog.hide(context);
     }
+  }
+
+  /// Fungsi untuk membuka WhatsApp admin
+  Future<void> _openWhatsApp() async {
+    const phoneNumber = '+6281392303981';
+    const message = 'Halo Admin Gymer, saya tertarik untuk menjadi member. Bisa bantu saya?';
+    
+    final whatsappUrl = Uri.parse(
+      'https://wa.me/${phoneNumber.replaceAll('+', '')}?text=${Uri.encodeComponent(message)}'
+    );
+    
+    try {
+      if (await canLaunchUrl(whatsappUrl)) {
+        await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Tidak dapat membuka WhatsApp')),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
+  /// Cek apakah user memiliki membership aktif
+  bool _isActiveMember(Map<String, String> userDetails) {
+    final remainingDays = int.tryParse(userDetails['remainingDays'] ?? '0') ?? 0;
+    final package = userDetails['package'] ?? '';
+    
+    // User dianggap member aktif jika punya sisa hari > 0 dan paket tidak kosong
+    return remainingDays > 0 && package.isNotEmpty && package != '-';
   }
 
   @override
@@ -104,6 +129,10 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
                                     children: [
                                       _buildUserInfoCard(userDetails, email, name),
                                       const SizedBox(height: 24),
+                                      // Tampilkan promosi membership jika user bukan member aktif
+                                      if (!_isActiveMember(userDetails))
+                                        _buildMembershipPromoCard(),
+                                      const SizedBox(height: 24),
                                       _buildHistorySection(email),
                                     ],
                                   ),
@@ -144,7 +173,8 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
 
   Widget _buildUserInfoCard(
       Map<String, String> userDetails, String email, String name) {
-    // ...
+    bool isActiveMember = _isActiveMember(userDetails);
+    
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -170,53 +200,64 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
           ),
           const SizedBox(height: 4),
           Text(
-            "Tersisa ${userDetails['remainingDays'] ?? '-'} Hari",
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            isActiveMember 
+                ? "Tersisa ${userDetails['remainingDays'] ?? '-'} Hari"
+                : "Belum menjadi member",
+            style: TextStyle(
+              fontSize: 16, 
+              color: isActiveMember ? Colors.grey[600] : Colors.orange[600],
+              fontWeight: isActiveMember ? FontWeight.normal : FontWeight.w600,
+            ),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF2C384A),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          // Tombol presensi hanya untuk member aktif
+          if (isActiveMember)
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2C384A),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-            ),
-            onPressed: () {
-              _recordAttendance(email, name);
-            },
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.task, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Presensi',
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 255, 65, 65),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+              onPressed: () {
+                _recordAttendance(email, name);
+              },
+              child: const Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.task, color: Colors.white),
+                  SizedBox(width: 8),
+                  Text('Presensi',
+                      style: TextStyle(color: Colors.white, fontSize: 16)),
+                ],
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
             ),
-            onPressed: () {
-              _logout();
-            },
-            child: const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.logout, color: Colors.white),
-                SizedBox(width: 8),
-                Text('Logout',
-                    style: TextStyle(color: Colors.white, fontSize: 16)),
-              ],
+          // Pesan untuk non-member
+          if (!isActiveMember)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.orange[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.orange[200]!),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline, color: Colors.orange[600]),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Untuk menggunakan fasilitas gym, Anda perlu menjadi member terlebih dahulu.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Color(0xFF2C384A),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
         ],
       ),
     );
@@ -300,6 +341,124 @@ class _UserhomeScreenState extends State<UserhomeScreen> {
           Text(
             'Sisa Hari : $remainingDays',
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Widget untuk promosi membership
+  Widget _buildMembershipPromoCard() {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 0),
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF2C384A),
+            Color(0xFF3A4B5C),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Icon dan judul
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.15),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(
+                  Icons.star,
+                  color: Colors.amber,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Text(
+                'Tertarik Jadi Member?',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          // Deskripsi
+          const Text(
+            'Dapatkan akses unlimited ke semua fasilitas gym dan nikmati pengalaman fitness terbaik!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.white70,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 20),
+          // Tombol WhatsApp
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: _openWhatsApp,
+              icon: const Icon(
+                Icons.chat,
+                color: Colors.white,
+                size: 20,
+              ),
+              label: const Text(
+                'Hubungi Admin via WhatsApp',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF25D366), // WhatsApp green
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                elevation: 3,
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          // Info kontak
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.phone,
+                size: 16,
+                color: Colors.white60,
+              ),
+              const SizedBox(width: 6),
+              const Text(
+                '+62 813-9230-3981',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.white60,
+                ),
+              ),
+            ],
           ),
         ],
       ),

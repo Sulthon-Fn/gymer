@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gymer/service/database/database_service.dart';
 
-/// EditProfileScreen - Screen untuk mengedit nomor telepon user
-/// 
-/// Fitur:
-/// - Menampilkan form untuk edit nomor telepon
-/// - Validasi input nomor telepon
-/// - Update data ke Firebase
-/// - Feedback loading dan success/error message
+
 class EditProfileScreen extends StatefulWidget {
   final String currentPhone;
   final String userName;
