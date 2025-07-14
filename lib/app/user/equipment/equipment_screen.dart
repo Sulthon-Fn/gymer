@@ -8,37 +8,37 @@ class EquipmentScreen extends StatelessWidget {
     const Color primaryColor = Color(0xFF2C384A);
     const Color backgroundColor = Color(0xFFE9E9E9);
 
-    // Data equipment/fasilitas gym
+    // Data equipment/fasilitas gym dengan gambar yang sesuai
     final List<Map<String, String>> equipmentList = [
       {
         'name': 'Treadmill',
         'description': 'Cardio equipment untuk berlari atau berjalan',
-        'image': 'assets/images/fasilitas.png',
+        'image': 'assets/images/treadmill icon.png',
       },
       {
         'name': 'Bench Press',
         'description': 'Equipment untuk latihan dada dan lengan',
-        'image': 'assets/images/fasilitas.png',
+        'image': 'assets/images/bench press icon.png',
       },
       {
         'name': 'Dumbbells',
         'description': 'Free weight untuk berbagai latihan',
-        'image': 'assets/images/fasilitas.png',
+        'image': 'assets/images/dumbbells icon.png',
       },
       {
         'name': 'Pull-up Bar',
         'description': 'Equipment untuk latihan punggung dan lengan',
-        'image': 'assets/images/fasilitas.png',
+        'image': 'assets/images/pull-up bar icon.png',
       },
       {
         'name': 'Leg Press',
         'description': 'Equipment untuk latihan kaki',
-        'image': 'assets/images/fasilitas.png',
+        'image': 'assets/images/leg press icon.png',
       },
       {
         'name': 'Cable Machine',
         'description': 'Multi-purpose strength training equipment',
-        'image': 'assets/images/fasilitas.png',
+        'image': 'assets/images/cable machine icon.png',
       },
     ];
 
@@ -126,11 +126,12 @@ class EquipmentScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            // Tampilkan gambar asli tanpa color filter
             Image.asset(
               equipment['image']!,
               height: 60,
               width: 60,
-              color: const Color(0xFF2C384A),
+              fit: BoxFit.contain,
             ),
             const SizedBox(height: 12),
             Text(
